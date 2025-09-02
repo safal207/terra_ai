@@ -1,0 +1,44 @@
+Metadata-Version: 2.4
+Name: terra-ai
+Version: 0.4.0
+Summary: Terra AI: approachable ML toolkit for education
+Author: Terra Labs
+License: Apache-2.0
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: typer>=0.12
+Requires-Dist: pydantic-settings>=2.3
+Provides-Extra: vision
+Requires-Dist: torch>=2.2; extra == "vision"
+Requires-Dist: torchvision; extra == "vision"
+Requires-Dist: opencv-python; extra == "vision"
+Provides-Extra: nlp
+Requires-Dist: pymorphy2; extra == "nlp"
+Requires-Dist: razdel; extra == "nlp"
+Requires-Dist: transformers>=4.42; extra == "nlp"
+Provides-Extra: ts
+Requires-Dist: pandas; extra == "ts"
+Requires-Dist: numpy; extra == "ts"
+Requires-Dist: scikit-learn; extra == "ts"
+Provides-Extra: trade
+Requires-Dist: pandas; extra == "trade"
+Requires-Dist: yfinance; extra == "trade"
+Provides-Extra: docs
+Requires-Dist: mkdocs-material; extra == "docs"
+Requires-Dist: pymdown-extensions; extra == "docs"
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Requires-Dist: pre-commit; extra == "dev"
+Requires-Dist: build; extra == "dev"
+
+# Terra AI
+
+### 5 минут до первой модели
+```bash
+pip install -e .[ts]         # минимально
+terra dataset digits
+terra train LogReg --dataset digits
+```
