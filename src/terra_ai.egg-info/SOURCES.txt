@@ -1,0 +1,17 @@
+README.md
+pyproject.toml
+src/terra_ai/__init__.py
+src/terra_ai/config.py
+src/terra_ai.egg-info/PKG-INFO
+src/terra_ai.egg-info/SOURCES.txt
+src/terra_ai.egg-info/dependency_links.txt
+src/terra_ai.egg-info/entry_points.txt
+src/terra_ai.egg-info/requires.txt
+src/terra_ai.egg-info/top_level.txt
+src/terra_ai/cli/__init__.py
+src/terra_ai/core/__init__.py
+src/terra_ai/nlp/__init__.py
+src/terra_ai/timeseries/__init__.py
+src/terra_ai/trade/__init__.py
+src/terra_ai/vision/__init__.py
+tests/test_smoke.py

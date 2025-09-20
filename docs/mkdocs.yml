@@ -1,0 +1,6 @@
+site_name: Terra AI
+theme:
+  name: material
+nav:
+  - 'Home': index.md
+  - 'Home (English)': en/index.md

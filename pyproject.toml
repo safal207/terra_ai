@@ -1,0 +1,28 @@
+[project]
+name = "terra-ai"
+version = "0.4.0"
+description = "Terra AI: approachable ML toolkit for education"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [{name="Terra Labs"}]
+
+dependencies = [
+  "typer>=0.12",
+  "pydantic-settings>=2.3",
+]
+
+[project.optional-dependencies]
+vision = ["torch>=2.2", "torchvision", "opencv-python"]
+nlp    = ["pymorphy2", "razdel", "transformers>=4.42"]
+ts     = ["pandas", "numpy", "scikit-learn"]
+trade  = ["pandas", "yfinance"]
+docs   = ["mkdocs-material", "pymdown-extensions"]
+dev    = ["pytest", "pytest-cov", "ruff", "mypy", "pre-commit", "build"]
+
+[project.scripts]
+terra = "terra_ai.cli:app"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
