@@ -29,7 +29,7 @@ def dataset(name: str, to: str | None = None):
         raise typer.Exit("Неизвестный датасет: digits | mnist")
 
 @app.command()
-def train(spec: str = typer.Argument(..., help="Спецификация модели (e.g. 'LogReg' или 'CNN@mnist')"),
+def train(spec: str = typer.Argument(..., help="Спецификация модели (e.g. 'LogReg' или 'TinyCNN@mnist')"),
           dataset: str = "digits",
           epochs: int = 5):
     """
@@ -48,42 +48,50 @@ def train(spec: str = typer.Argument(..., help="Спецификация мод�
         typer.echo(f"[digits] LogReg accuracy: {acc:.3f}")
     elif dataset.lower() == "mnist":
         try:
-            import torch, torch.nn as nn, torch.optim as optim
+            import torch
+            import torch.nn as nn
+            import torch.optim as optim
             from torch.utils.data import DataLoader
             from torchvision import datasets, transforms
-        except Exception:
+            from terra_ai.models.registry import get_model
+            # The following import is crucial to ensure the models are registered
+            from terra_ai.vision import models as vision_models
+        except ImportError:
             raise typer.Exit("MNIST-CNN требует extra 'vision': pip install terra-ai[vision]")
-        class TinyCNN(nn.Module):
-            def __init__(self):
-                super().__init__()
-                self.net = nn.Sequential(
-                    nn.Conv2d(1, 16, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),
-                    nn.Conv2d(16, 32, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),
-                    nn.Flatten(), nn.Linear(32*7*7, 128), nn.ReLU(), nn.Linear(128, 10)
-                )
-            def forward(self, x): return self.net(x)
+
+        model_name = spec.split('@')[0]
+        try:
+            ModelClass = get_model(model_name)
+        except ValueError as e:
+            raise typer.Exit(str(e))
+
         train_ds = datasets.MNIST(str(settings.data_dir / "mnist"), train=True, download=True, transform=transforms.ToTensor())
         test_ds  = datasets.MNIST(str(settings.data_dir / "mnist"), train=False, download=True, transform=transforms.ToTensor())
         train_dl = DataLoader(train_ds, batch_size=128, shuffle=True)
         test_dl  = DataLoader(test_ds, batch_size=256)
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        model = TinyCNN().to(device)
+        model = ModelClass().to(device)
         opt = optim.Adam(model.parameters(), lr=1e-3)
         loss = nn.CrossEntropyLoss()
+
         for e in range(epochs):
             model.train()
             for x,y in train_dl:
                 x,y = x.to(device), y.to(device)
-                opt.zero_grad(); l = loss(model(x), y); l.backward(); opt.step()
+                opt.zero_grad()
+                l = loss(model(x), y)
+                l.backward()
+                opt.step()
             typer.echo(f"epoch {e+1}/{epochs} done")
+
         model.eval()
         correct,total = 0,0
-        import torch
         with torch.no_grad():
             for x,y in test_dl:
                 x,y = x.to(device), y.to(device)
                 pred = model(x).argmax(1)
-                correct += (pred==y).sum().item(); total += y.numel()
-        typer.echo(f"[mnist] TinyCNN accuracy: {correct/total:.3f}")
+                correct += (pred==y).sum().item()
+                total += y.numel()
+        typer.echo(f"[{dataset}] {model_name} accuracy: {correct/total:.3f}")
     else:
         raise typer.Exit("Поддержка train: digits | mnist")
